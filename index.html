@@ -510,7 +510,7 @@
 
     <!-- Scripting & Google Sheets API Logic -->
     <script>
-        // আপনার গুগল স্ক্রিপ্ট ওয়েব অ্যাপ ইউআরএল এখানে আপডেট করা হয়েছে
+        // আপনার গুগল স্ক্রিপ্ট ওয়েব অ্যাপ ইউআরএল
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxJiUsq573hrgVAGsS-GOrLgyawP_Texd-MWVuhQtHToXORZcP5tSQ3YVI-XWKmvBRC/exec';
 
         let allTransactions = [];
@@ -553,6 +553,10 @@
         }
 
         function initializeApp() {
+            // ফর্মের ডেট ফিল্ডে ডিফল্টভাবে আজকের তারিখ সেট করা
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+            
             fetchTransactions();
         }
 
@@ -565,8 +569,8 @@
                     date: item.date,
                     category: item.category,
                     amount: Number(item.amount),
-                    year: item.year.toString(),
-                    month: item.month.toString()
+                    year: item.year ? item.year.toString() : new Date(item.date).getFullYear().toString(),
+                    month: item.month !== undefined ? item.month.toString() : new Date(item.date).getMonth().toString()
                 }));
                 updateUIAfterFetch();
             })
@@ -595,7 +599,9 @@
                 currentSelectedYear
             ]);
 
-            allTransactions.forEach(item => yearsSet.add(item.year));
+            allTransactions.forEach(item => {
+                if(item.year) yearsSet.add(item.year);
+            });
 
             let sortedYears = Array.from(yearsSet).sort((a, b) => b - a);
 
@@ -648,6 +654,7 @@
             const rawDate = document.getElementById('date').value;
             const itemDate = new Date(rawDate);
             const entryYear = itemDate.getFullYear().toString();
+            const entryMonth = itemDate.getMonth().toString();
             
             const data = {
                 action: 'addExpense',
@@ -655,7 +662,7 @@
                 amount: Number(document.getElementById('amount').value),
                 date: rawDate,
                 year: entryYear,
-                month: itemDate.getMonth().toString()
+                month: entryMonth
             };
 
             const submitBtn = document.getElementById('submitBtn');
@@ -673,6 +680,8 @@
                 if(res.status === 'success') {
                     alert('সফলভাবে গুগল শিটে খরচ সংরক্ষিত হয়েছে!');
                     form.reset();
+                    // রিসেটের পর আবার আজকের ডেট বসিয়ে দেওয়া
+                    document.getElementById('date').value = new Date().toISOString().split('T')[0];
                     currentSelectedYear = entryYear;
                     fetchTransactions(); // গুগল শিট থেকে লেটেস্ট ডেটা রিফ্রেশ করে নিয়ে আসবে
                 } else {
