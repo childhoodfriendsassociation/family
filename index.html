@@ -385,6 +385,9 @@
                 </div>
                 <div class="header-actions">
                     <button class="btn-icon" onclick="resetToHome()" title="হোম"><i class="fas fa-house"></i></button>
+                    <button class="btn-icon" onclick="exportToCSV()" title="এক্সেল ব্যাকআপ (CSV Download)"><i class="fas fa-file-excel" style="color: #107c41;"></i> ব্যাকআপ</button>
+                    <button class="btn-icon" onclick="document.getElementById('csvFileInput').click()" title="ব্যাকআপ ফাইল রিস্টোর"><i class="fas fa-file-import" style="color: var(--primary);"></i> রিস্টোর</button>
+                    <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="importFromCSV(event)">
                     <button class="btn-icon" onclick="window.print()" title="প্রিন্ট"><i class="fas fa-print"></i></button>
                     <button class="btn-icon" onclick="toggleTheme()" title="ডার্ক/লাইট মোড"><i id="themeIcon" class="fas fa-moon"></i></button>
                 </div>
@@ -512,7 +515,6 @@
             const currentYear = new Date().getFullYear();
             const yearTabs = document.getElementById('yearTabs');
             
-            // পূর্বে সিলেক্ট করা বছর বা বর্তমান বছর ট্র্যাক করা
             let yearsSet = new Set([currentYear.toString(), currentSelectedYear]);
             allTransactions.forEach(item => yearsSet.add(item.year));
 
@@ -580,7 +582,6 @@
 
             allTransactions.unshift(data);
             
-            // নতুন বছরের এন্ট্রি পড়লে স্বয়ংক্রিয়ভাবে বছরের ট্যাবে সেটি যুক্ত ও আপডেট হয়ে যাবে
             currentSelectedYear = entryYear; 
             initializeYears();
 
@@ -594,6 +595,80 @@
 
             form.reset();
         });
+
+        // ১. এক্সেল ব্যাকআপ বা CSV এক্সপোর্ট ফিচার
+        function exportToCSV() {
+            if (allTransactions.length === 0) {
+                alert('ব্যাকআপ নেওয়ার মতো কোনো ডাটা নেই!');
+                return;
+            }
+
+            let csvContent = "\uFEFFDate,Category,Amount,Year,Month\n"; // UTF-8 BOM যুক্ত করা হলো যাতে বাংলায় সমস্যা না হয়
+            allTransactions.forEach(item => {
+                let row = `"${item.date}","${item.category.replace(/"/g, '""')}","${item.amount}","${item.year}","${item.month}"`;
+                csvContent += row + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Expense_Backup_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ২. ব্যাকআপ ফাইল থেকে ডাটা রিস্টোর বা ইমপোর্ট ফিচার
+        function importFromCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                let importedData = [];
+
+                // ১ম লাইন হেডার ধরে লুপ শুরু হবে ১ থেকে
+                for (let i = 1; i < lines.length; i++) {
+                    let line = lines[i].trim();
+                    if (!line) continue;
+
+                    // কমা এবং কোটেশন হ্যান্ডেল করার রেগুলার এক্সপ্রেশন
+                    let row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                    if (!row || row.length < 5) {
+                        // সিম্পল স্প্লিট ফলব্যাক যদি রেগেক্স ম্যাচ না করে
+                        row = line.split(',');
+                    }
+
+                    if (row && row.length >= 5) {
+                        let date = row[0].replace(/"/g, '').trim();
+                        let category = row[1].replace(/"/g, '').trim();
+                        let amount = Number(row[2].replace(/"/g, '').trim());
+                        let year = row[3].replace(/"/g, '').trim();
+                        let month = row[4].replace(/"/g, '').trim();
+
+                        if (date && !isNaN(amount)) {
+                            importedData.push({ date, category, amount, year, month });
+                        }
+                    }
+                }
+
+                if (importedData.length > 0) {
+                    allTransactions = importedData;
+                    initializeYears();
+                    filterAndDisplayData();
+                    alert(`সফলভাবে ${importedData.length} টি এন্ট্রি রিস্টোর করা হয়েছে!`);
+                } else {
+                    alert('ফাইল থেকে সঠিক ডাটা রিড করা সম্ভব হয়নি। অনুগ্রহ করে সঠিক CSV ফাইল দিন।');
+                }
+                
+                // ইনপুট রিসেট করা যাতে একই ফাইল আবার সিলেক্ট করলে কাজ করে
+                event.target.value = '';
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
 
         function filterAndDisplayData() {
             const tbody = document.getElementById('expenseTableBody');
