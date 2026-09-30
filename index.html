@@ -78,20 +78,13 @@
             text-align: center;
         }
 
-        .login-card .login-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 5px;
-        }
-
         .login-card h2 {
             margin-bottom: 20px;
-            font-size: 16px;
+            font-size: 20px;
             color: var(--primary);
-            font-weight: 500;
         }
 
+        /* Hidden Main App */
         #appContainer {
             display: none;
         }
@@ -159,6 +152,10 @@
             align-items: center;
             gap: 6px;
             outline: none;
+        }
+
+        .header-select {
+            cursor: pointer;
         }
 
         .btn-icon:hover, .header-select:hover {
@@ -355,6 +352,7 @@
             font-weight: 600;
         }
 
+        /* Print Styling */
         @media print {
             body { background: #fff; color: #000; padding: 0; }
             header, .card-box:first-child, footer, #loginOverlay { display: none !important; }
@@ -370,8 +368,7 @@
     <!-- Admin Login Screen -->
     <div id="loginOverlay">
         <div class="login-card">
-            <div class="login-title"><i class="fas fa-wallet" style="color: var(--primary);"></i> আমার হিসেবের খাতা</div>
-            <h2>অ্যাডমিন লগইন</h2>
+            <h2><i class="fas fa-lock"></i> অ্যাডমিন লগইন</h2>
             <form id="loginForm">
                 <div class="input-group">
                     <label for="adminPassword">পাসওয়ার্ড দিন</label>
@@ -393,11 +390,14 @@
                     <h1>আমার হিসেবের খাতা</h1>
                 </div>
 
+                <!-- Header Actions & Dropdown Controls -->
                 <div class="header-actions">
+                    <!-- Year Dropdown -->
                     <select id="yearSelect" class="header-select" onchange="onYearChange(this.value)">
-                        <!-- ডাইনামিক বছর -->
+                        <!-- ডাইনামিক বছর এখানে যুক্ত হবে -->
                     </select>
 
+                    <!-- Month Dropdown -->
                     <select id="monthSelect" class="header-select" onchange="onMonthChange(this.value)">
                         <option value="all">সকল মাস</option>
                         <option value="0">জানুয়ারি</option>
@@ -415,7 +415,7 @@
                     </select>
 
                     <button class="btn-icon" onclick="resetToHome()" title="হোম"><i class="fas fa-house"></i></button>
-                    <button class="btn-icon" onclick="window.print()" title="প্রিন্ট"><i class="fas fa-print"></i> প্রিন্ট</button>
+                    <button class="btn-icon" onclick="window.print()" title="প্রিন্ট"><i class="fas fa-print"></i></button>
                     <button class="btn-icon" onclick="toggleTheme()" title="ডার্ক/লাইট মোড"><i id="themeIcon" class="fas fa-moon"></i></button>
                     <button class="btn-icon" onclick="logout()" title="লগআউট" style="color: var(--danger);"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
@@ -458,7 +458,7 @@
                         <label for="date">তারিখ</label>
                         <input type="date" id="date" required>
                     </div>
-                    <button type="submit" class="btn-primary" id="submitBtn">
+                    <button type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> খরচ সেভ করুন
                     </button>
                 </form>
@@ -481,8 +481,8 @@
                             <tr>
                                 <td colspan="4">
                                     <div class="empty-state">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                        <p>গুগল শিট থেকে ডেটা লোড হচ্ছে...</p>
+                                        <i class="fas fa-folder-open"></i>
+                                        <p>এখনো কোনো খরচের হিসাব যোগ করা হয়নি।</p>
                                     </div>
                                 </td>
                             </tr>
@@ -494,16 +494,16 @@
 
         <!-- Footer -->
         <footer>
-            <p>© 2026 <span>আব্দুল আউয়াল</span> | এই সিস্টেমটি শুধুমাত্র আব্দুল আউয়ালের মাসিক এবং বাৎসরিক পারিবারিক খরচের হিসাব সংরক্ষণের জন্য সংরক্ষিত।</p>
+            <p>© 2026 <span>আব্দুল আউয়াল</span> | এই সিস্টেমটি শুধুমাত্র আব্দুল আউয়ালের মাসিক এবং বাৎসরিক পারিবারিক খরচের হিসাব সংরক্ষণের জন্য সংরক্ষিত। গোপনীয়তা ও ডেটা সুরক্ষার দায়িত্ব ব্যবহারকারীর নিজস্ব।</p>
         </footer>
     </div>
 
-    <!-- Scripting & Google Sheets API Logic -->
+    <!-- Scripting & Google Sheets API / Auth Logic -->
     <script>
-        // আপনার নতুন গুগল শিট এপিআই লিংক
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxSD7cUsHfGwDkpzqawJ9Fk4ltQ0dennxJlHV06mIKEadsYfL6mD8CoU8FiuBecDISP/exec';
+        const ADMIN_PASSWORD = "123"; 
+        const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'; // আপনার গুগল স্ক্রিপ্ট ওয়েব অ্যাপ ইউআরএল এখানে বসাবেন
 
-        let allTransactions = [];
+        let allTransactions = JSON.parse(localStorage.getItem('abdul_awal_expenses')) || [];
         let currentSelectedYear = new Date().getFullYear().toString();
         let currentSelectedMonth = 'all';
 
@@ -511,31 +511,14 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const pass = document.getElementById('adminPassword').value;
-
-            fetch(scriptURL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'login', password: pass }),
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-            })
-            .then(response => response.json())
-            .then(result => {
-                if(result.success) {
-                    grantAccess();
-                } else {
-                    alert('ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিয়ে প্রবেশ করুন।');
-                }
-            })
-            .catch(error => {
-                console.error('Login Error:', error);
-                alert('সার্ভার কানেকশনে সমস্যা হয়েছে।');
-            });
+            if(pass === ADMIN_PASSWORD) {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                initializeApp();
+            } else {
+                alert('ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিয়ে প্রবেশ করুন।');
+            }
         });
-
-        function grantAccess() {
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('appContainer').style.display = 'block';
-            initializeApp();
-        }
 
         function logout() {
             document.getElementById('appContainer').style.display = 'none';
@@ -544,46 +527,6 @@
         }
 
         function initializeApp() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('date').value = today;
-            
-            initializeYearsDropdown();
-            fetchTransactions(); // সাইটে লগইন বা ঢোকার সাথেই সাথে শিট থেকে লেটেস্ট ডেটা সিঙ্ক হবে
-        }
-
-        // গুগল শিট থেকে ক্যাশ এড়িয়ে সরাসরি লেটেস্ট ডেটা লোড করার নিরাপদ ফাংশন (?t=...)
-        function fetchTransactions() {
-            const noCacheURL = scriptURL + '?t=' + new Date().getTime();
-
-            fetch(noCacheURL, {
-                method: 'GET',
-                redirect: 'follow'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(Array.isArray(data)) {
-                    allTransactions = data.map(item => {
-                        let itemDate = new Date(item.date);
-                        return {
-                            date: item.date,
-                            category: item.category,
-                            amount: Number(item.amount),
-                            year: item.year ? item.year.toString() : itemDate.getFullYear().toString(),
-                            month: (item.month !== undefined && item.month !== "") ? item.month.toString() : itemDate.getMonth().toString()
-                        };
-                    });
-                }
-                updateUIAfterFetch();
-            })
-            .catch(error => {
-                console.error('Fetch Error:', error);
-                document.getElementById('expenseTableBody').innerHTML = `
-                    <tr><td colspan="4"><div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--danger)"></i><p>গুগল শিট থেকে ডেটা লোড করতে সমস্যা হয়েছে।</p></div></td></tr>
-                `;
-            });
-        }
-
-        function updateUIAfterFetch() {
             initializeYearsDropdown();
             document.getElementById('monthSelect').value = currentSelectedMonth;
             filterAndDisplayData();
@@ -593,21 +536,17 @@
             const currentYear = new Date().getFullYear();
             const yearSelect = document.getElementById('yearSelect');
             
+            // অটোমেটিক গত বছর, চলতি বছর, আগামী বছর এবং সংরক্ষিত ডেটার বছরগুলো একত্র করা
             let yearsSet = new Set([
-                (currentYear - 2).toString(),
                 (currentYear - 1).toString(), 
                 currentYear.toString(), 
                 (currentYear + 1).toString(), 
                 currentSelectedYear
             ]);
 
-            allTransactions.forEach(item => {
-                if(item.year && !isNaN(item.year)) {
-                    yearsSet.add(item.year);
-                }
-            });
+            allTransactions.forEach(item => yearsSet.add(item.year));
 
-            let sortedYears = Array.from(yearsSet).sort((a, b) => Number(b) - Number(a));
+            let sortedYears = Array.from(yearsSet).sort((a, b) => b - a);
 
             yearSelect.innerHTML = '';
             sortedYears.forEach(y => {
@@ -651,7 +590,6 @@
             }
         }
 
-        // ফর্ম সাবমিট হ্যান্ডলার (নতুন খরচ সেভ করার পর সাথে সাথে সিঙ্ক হবে)
         const form = document.getElementById('expenseForm');
         form.addEventListener('submit', e => {
             e.preventDefault();
@@ -659,51 +597,39 @@
             const rawDate = document.getElementById('date').value;
             const itemDate = new Date(rawDate);
             const entryYear = itemDate.getFullYear().toString();
-            const entryMonth = itemDate.getMonth().toString();
             
-            const newData = {
-                action: 'addExpense',
+            const data = {
                 category: document.getElementById('category').value,
                 amount: Number(document.getElementById('amount').value),
                 date: rawDate,
                 year: entryYear,
-                month: entryMonth
+                month: itemDate.getMonth().toString()
             };
 
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...`;
+            allTransactions.unshift(data);
+            
+            // ব্রাউজারের লোকাল স্টোরেজে ব্যাকআপ
+            localStorage.setItem('abdul_awal_expenses', JSON.stringify(allTransactions));
+            
+            currentSelectedYear = entryYear; 
+            initializeYearsDropdown();
+            document.getElementById('yearSelect').value = currentSelectedYear;
+            filterAndDisplayData();
 
-            fetch(scriptURL, { 
-                method: 'POST', 
-                body: JSON.stringify(newData),
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-            })
-            .then(response => response.json())
-            .then(res => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `<i class="fas fa-save"></i> খরচ সেভ করুন`;
-                
-                if(res.status === 'success' || res.success) {
-                    currentSelectedYear = entryYear;
-                    document.getElementById('yearSelect').value = currentSelectedYear;
+            // গুগল শিটস এপিআই ব্যাকআপ কল
+            if(scriptURL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                fetch(scriptURL, { 
+                    method: 'POST', 
+                    mode: 'no-cors',
+                    body: JSON.stringify(data) 
+                })
+                .then(() => alert('সফলভাবে লোকাল এবং গুগল শিটে ব্যাকআপ সংরক্ষিত হয়েছে!'))
+                .catch(error => console.error('Google Sheets Error!', error));
+            } else {
+                alert('হিসাব সফলভাবে সেভ হয়েছে!');
+            }
 
-                    form.reset();
-                    document.getElementById('date').value = new Date().toISOString().split('T')[0];
-                    
-                    // সাথে সাথে শিট থেকে লেটেস্ট ডাটা রিফ্রেশ করে নিয়ে আসা হবে
-                    fetchTransactions();
-                    alert('সফলভাবে গুগল শিটে খরচ সংরক্ষিত ও আপডেট হয়েছে!');
-                } else {
-                    alert('সেভ করতে সমস্যা হয়েছে: ' + (res.message || 'অজানা ত্রুটি'));
-                }
-            })
-            .catch(error => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `<i class="fas fa-save"></i> খরচ সেভ করুন`;
-                console.error('Google Sheets Error!', error);
-                alert('সার্ভার কানেকশনে সমস্যা হয়েছে।');
-            });
+            form.reset();
         });
 
         function filterAndDisplayData() {
@@ -728,8 +654,7 @@
                 `;
             } else {
                 tbody.innerHTML = '';
-                // লেটেস্ট এন্ট্রিগুলো উপরে দেখানোর জন্য রিভার্স করা হলো
-                filtered.slice().reverse().forEach(item => {
+                filtered.forEach(item => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${item.date}</td>
