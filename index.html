@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আমার হিসেবের খাতা - আব্দুল আউয়াল</title>
+    <title>আমার হিসেবের খাতা</title>
     <!-- Google Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -53,43 +53,7 @@
             margin: 0 auto;
         }
 
-        /* Login Screen Styling */
-        #loginOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .login-card {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .login-card h2 {
-            margin-bottom: 20px;
-            font-size: 20px;
-            color: var(--primary);
-        }
-
-        /* Hidden Main App */
-        #appContainer {
-            display: none;
-        }
-
-        /* Header Style */
+        /* Facebook Style Top Bar (Header) */
         header {
             background: var(--card-bg);
             padding: 15px 20px;
@@ -102,6 +66,14 @@
             z-index: 1000;
             display: flex;
             flex-direction: column;
+            gap: 12px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
             gap: 10px;
         }
 
@@ -111,14 +83,7 @@
             color: var(--primary);
             text-align: center;
             width: 100%;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
+            margin-bottom: -5px;
         }
 
         .logo-area {
@@ -132,6 +97,7 @@
             font-weight: 700;
         }
 
+        /* Top Action Buttons */
         .header-actions {
             display: flex;
             align-items: center;
@@ -139,11 +105,11 @@
             flex-wrap: wrap;
         }
 
-        .btn-icon, .header-select {
+        .btn-icon {
             background: var(--bg-color);
             color: var(--text-main);
             border: 1px solid var(--border);
-            padding: 8px 12px;
+            padding: 8px 14px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
@@ -151,16 +117,59 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            outline: none;
         }
 
-        .header-select {
-            cursor: pointer;
-        }
-
-        .btn-icon:hover, .header-select:hover {
+        .btn-icon:hover {
             background: var(--border);
             color: var(--primary);
+        }
+
+        /* Header Navigation Tabs (Year & Month inside Header) */
+        .header-nav-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+        }
+
+        .tab-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .tab-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+            min-width: 55px;
+        }
+
+        .tab-group {
+            display: flex;
+            gap: 6px;
+        }
+
+        .tab-btn {
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
         }
 
         /* Stats Cards */
@@ -334,7 +343,7 @@
             margin-bottom: 8px;
         }
 
-        /* Footer */
+        /* Footer Styling */
         footer {
             background: var(--card-bg);
             padding: 20px;
@@ -355,7 +364,7 @@
         /* Print Styling */
         @media print {
             body { background: #fff; color: #000; padding: 0; }
-            header, .card-box:first-child, footer, #loginOverlay { display: none !important; }
+            header, .card-box:first-child, footer { display: none !important; }
             .container { max-width: 100%; }
             .card-box { border: none; box-shadow: none; padding: 0; }
             table { width: 100%; border: 1px solid #ddd; }
@@ -365,59 +374,47 @@
 </head>
 <body>
 
-    <!-- Admin Login Screen -->
-    <div id="loginOverlay">
-        <div class="login-card">
-            <h2><i class="fas fa-lock"></i> অ্যাডমিন লগইন</h2>
-            <form id="loginForm">
-                <div class="input-group">
-                    <label for="adminPassword">পাসওয়ার্ড দিন</label>
-                    <input type="password" id="adminPassword" placeholder="পাসওয়ার্ড লিখুন" required>
-                </div>
-                <button type="submit" class="btn-primary">লগইন করুন</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Main Application Container -->
-    <div class="container" id="appContainer">
-        <!-- Header -->
+    <div class="container">
+        <!-- Header with Bismillah, Title, Actions & Year/Month Buttons -->
         <header>
             <div class="bismillah">বিসমিল্লাহির রাহমানির রাহীম</div>
-            <div class="header-content">
+            <div class="header-top">
                 <div class="logo-area">
                     <i class="fas fa-wallet" style="color: var(--primary); font-size: 22px;"></i>
                     <h1>আমার হিসেবের খাতা</h1>
                 </div>
-
-                <!-- Header Actions & Dropdown Controls -->
                 <div class="header-actions">
-                    <!-- Year Dropdown -->
-                    <select id="yearSelect" class="header-select" onchange="onYearChange(this.value)">
-                        <!-- ডাইনামিক বছর এখানে যুক্ত হবে -->
-                    </select>
-
-                    <!-- Month Dropdown -->
-                    <select id="monthSelect" class="header-select" onchange="onMonthChange(this.value)">
-                        <option value="all">সকল মাস</option>
-                        <option value="0">জানুয়ারি</option>
-                        <option value="1">ফেব্রুয়ারি</option>
-                        <option value="2">মার্চ</option>
-                        <option value="3">এপ্রিল</option>
-                        <option value="4">মে</option>
-                        <option value="5">জুন</option>
-                        <option value="6">জুলাই</option>
-                        <option value="7">আগস্ট</option>
-                        <option value="8">সেপ্টেম্বর</option>
-                        <option value="9">অক্টোবর</option>
-                        <option value="10">নভেম্বর</option>
-                        <option value="11">ডিসেম্বর</option>
-                    </select>
-
                     <button class="btn-icon" onclick="resetToHome()" title="হোম"><i class="fas fa-house"></i></button>
                     <button class="btn-icon" onclick="window.print()" title="প্রিন্ট"><i class="fas fa-print"></i></button>
                     <button class="btn-icon" onclick="toggleTheme()" title="ডার্ক/লাইট মোড"><i id="themeIcon" class="fas fa-moon"></i></button>
-                    <button class="btn-icon" onclick="logout()" title="লগআউট" style="color: var(--danger);"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+
+            <!-- Year & Month Tabs inside Header -->
+            <div class="header-nav-section">
+                <div class="tab-row">
+                    <span class="tab-label">বছর:</span>
+                    <div class="tab-group" id="yearTabs">
+                        <!-- ডাইনামিক বছর বাটন এখানে রেন্ডার হবে -->
+                    </div>
+                </div>
+                <div class="tab-row">
+                    <span class="tab-label">মাস:</span>
+                    <div class="tab-group" id="monthTabs">
+                        <button class="tab-btn active" onclick="selectMonth('all', this)">সকল</button>
+                        <button class="tab-btn" onclick="selectMonth('0', this)">জানুয়ারি</button>
+                        <button class="tab-btn" onclick="selectMonth('1', this)">ফেব্রুয়ারি</button>
+                        <button class="tab-btn" onclick="selectMonth('2', this)">মার্চ</button>
+                        <button class="tab-btn" onclick="selectMonth('3', this)">এপ্রিল</button>
+                        <button class="tab-btn" onclick="selectMonth('4', this)">মে</button>
+                        <button class="tab-btn" onclick="selectMonth('5', this)">জুন</button>
+                        <button class="tab-btn" onclick="selectMonth('6', this)">জুলাই</button>
+                        <button class="tab-btn" onclick="selectMonth('7', this)">আগস্ট</button>
+                        <button class="tab-btn" onclick="selectMonth('8', this)">সেপ্টেম্বর</button>
+                        <button class="tab-btn" onclick="selectMonth('9', this)">অক্টোবর</button>
+                        <button class="tab-btn" onclick="selectMonth('10', this)">নভেম্বর</button>
+                        <button class="tab-btn" onclick="selectMonth('11', this)">ডিসেম্বর</button>
+                    </div>
                 </div>
             </div>
         </header>
@@ -492,89 +489,65 @@
             </div>
         </div>
 
-        <!-- Footer -->
+        <!-- Footer with Notice & Copyright -->
         <footer>
             <p>© 2026 <span>আব্দুল আউয়াল</span> | এই সিস্টেমটি শুধুমাত্র আব্দুল আউয়ালের মাসিক এবং বাৎসরিক পারিবারিক খরচের হিসাব সংরক্ষণের জন্য সংরক্ষিত। গোপনীয়তা ও ডেটা সুরক্ষার দায়িত্ব ব্যবহারকারীর নিজস্ব।</p>
         </footer>
     </div>
 
-    <!-- Scripting & Google Sheets API / Auth Logic -->
+    <!-- Script & Google Sheets API Integration -->
     <script>
-        const ADMIN_PASSWORD = "123"; 
-        const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'; // আপনার গুগল স্ক্রিপ্ট ওয়েব অ্যাপ ইউআরএল এখানে বসাবেন
+        const form = document.getElementById('expenseForm');
+        const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'; // আপনার গুগল স্ক্রিপ্ট ইউআরএল এখানে বসাবেন
 
-        let allTransactions = JSON.parse(localStorage.getItem('abdul_awal_expenses')) || [];
+        let allTransactions = [];
         let currentSelectedYear = new Date().getFullYear().toString();
         let currentSelectedMonth = 'all';
 
-        // Login Handler
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const pass = document.getElementById('adminPassword').value;
-            if(pass === ADMIN_PASSWORD) {
-                document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('appContainer').style.display = 'block';
-                initializeApp();
-            } else {
-                alert('ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিয়ে প্রবেশ করুন।');
-            }
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeYears();
         });
 
-        function logout() {
-            document.getElementById('appContainer').style.display = 'none';
-            document.getElementById('loginOverlay').style.display = 'flex';
-            document.getElementById('adminPassword').value = '';
-        }
-
-        function initializeApp() {
-            initializeYearsDropdown();
-            document.getElementById('monthSelect').value = currentSelectedMonth;
-            filterAndDisplayData();
-        }
-
-        function initializeYearsDropdown() {
+        function initializeYears() {
             const currentYear = new Date().getFullYear();
-            const yearSelect = document.getElementById('yearSelect');
+            const yearTabs = document.getElementById('yearTabs');
             
-            // অটোমেটিক গত বছর, চলতি বছর, আগামী বছর এবং সংরক্ষিত ডেটার বছরগুলো একত্র করা
-            let yearsSet = new Set([
-                (currentYear - 1).toString(), 
-                currentYear.toString(), 
-                (currentYear + 1).toString(), 
-                currentSelectedYear
-            ]);
-
+            // পূর্বে সিলেক্ট করা বছর বা বর্তমান বছর ট্র্যাক করা
+            let yearsSet = new Set([currentYear.toString(), currentSelectedYear]);
             allTransactions.forEach(item => yearsSet.add(item.year));
 
             let sortedYears = Array.from(yearsSet).sort((a, b) => b - a);
 
-            yearSelect.innerHTML = '';
+            yearTabs.innerHTML = '';
             sortedYears.forEach(y => {
-                let opt = document.createElement('option');
-                opt.value = y;
-                opt.innerText = y + ' সাল';
-                if (y === currentSelectedYear) {
-                    opt.selected = true;
-                }
-                yearSelect.appendChild(opt);
+                let btn = document.createElement('button');
+                btn.className = `tab-btn ${y === currentSelectedYear ? 'active' : ''}`;
+                btn.innerText = y;
+                btn.onclick = (e) => selectYear(y, e.target);
+                yearTabs.appendChild(btn);
             });
         }
 
-        function onYearChange(year) {
+        function selectYear(year, element) {
             currentSelectedYear = year;
+            document.querySelectorAll('#yearTabs .tab-btn').forEach(b => b.classList.remove('active'));
+            element.classList.add('active');
             filterAndDisplayData();
         }
 
-        function onMonthChange(month) {
+        function selectMonth(month, element) {
             currentSelectedMonth = month;
+            document.querySelectorAll('#monthTabs .tab-btn').forEach(b => b.classList.remove('active'));
+            element.classList.add('active');
             filterAndDisplayData();
         }
 
         function resetToHome() {
             currentSelectedYear = new Date().getFullYear().toString();
             currentSelectedMonth = 'all';
-            document.getElementById('yearSelect').value = currentSelectedYear;
-            document.getElementById('monthSelect').value = 'all';
+            initializeYears();
+            document.querySelectorAll('#monthTabs .tab-btn')[0].classList.add('active');
+            document.querySelectorAll('#monthTabs .tab-btn').forEach((b, idx) => { if(idx > 0) b.classList.remove('active'); });
             filterAndDisplayData();
         }
 
@@ -590,7 +563,6 @@
             }
         }
 
-        const form = document.getElementById('expenseForm');
         form.addEventListener('submit', e => {
             e.preventDefault();
             
@@ -608,25 +580,16 @@
 
             allTransactions.unshift(data);
             
-            // ব্রাউজারের লোকাল স্টোরেজে ব্যাকআপ
-            localStorage.setItem('abdul_awal_expenses', JSON.stringify(allTransactions));
-            
+            // নতুন বছরের এন্ট্রি পড়লে স্বয়ংক্রিয়ভাবে বছরের ট্যাবে সেটি যুক্ত ও আপডেট হয়ে যাবে
             currentSelectedYear = entryYear; 
-            initializeYearsDropdown();
-            document.getElementById('yearSelect').value = currentSelectedYear;
+            initializeYears();
+
             filterAndDisplayData();
 
-            // গুগল শিটস এপিআই ব্যাকআপ কল
             if(scriptURL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-                fetch(scriptURL, { 
-                    method: 'POST', 
-                    mode: 'no-cors',
-                    body: JSON.stringify(data) 
-                })
-                .then(() => alert('সফলভাবে লোকাল এবং গুগল শিটে ব্যাকআপ সংরক্ষিত হয়েছে!'))
-                .catch(error => console.error('Google Sheets Error!', error));
-            } else {
-                alert('হিসাব সফলভাবে সেভ হয়েছে!');
+                fetch(scriptURL, { method: 'POST', body: JSON.stringify(data) })
+                    .then(response => alert('সফলভাবে গুগল শিটে সংরক্ষিত হয়েছে!'))
+                    .catch(error => console.error('Error!', error.message));
             }
 
             form.reset();
