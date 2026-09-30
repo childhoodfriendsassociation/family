@@ -1,609 +1,769 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Payroll & Salary Dashboard</title>
-    <!-- Google Fonts: Times New Roman -->
+    <title>আমার হিসেবের খাতা - আব্দুল আউয়াল</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --primary: #d32f2f;
-            --primary-dark: #b71c1c;
-            --bg-color: #f4f6f9;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --danger: #ef4444;
+            --bg-color: #f1f5f9;
             --card-bg: #ffffff;
-            --text-main: #2d3748;
-            --text-muted: #718096;
-            --border-color: #cbd5e1;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 14px;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --danger: #f87171;
+            --bg-color: #0b0f19;
+            --card-bg: #111827;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #1f2937;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
         }
 
         body {
-            font-family: 'Times New Roman', Times, serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            margin: 0;
-            padding: 15px;
+            padding: 20px;
         }
 
-        .dashboard-container {
-            max-width: 800px;
+        .container {
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* Top Bar Info */
-        .top-bar {
+        /* Login Screen Styling */
+        #loginOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-card .login-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+
+        .login-card h2 {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Hidden Main App */
+        #appContainer {
+            display: none;
+        }
+
+        /* Header Style */
+        header {
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bismillah {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            text-align: center;
+            width: 100%;
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--card-bg);
-            padding: 12px 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: var(--text-muted);
             flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
             gap: 10px;
         }
 
-        .top-bar div {
+        .logo-area h1 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-icon, .header-select {
+            background: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 6px;
+            outline: none;
         }
 
-        .top-bar i {
+        .header-select {
+            cursor: pointer;
+        }
+
+        .btn-icon:hover, .header-select:hover {
+            background: var(--border);
             color: var(--primary);
         }
 
-        /* Main Card */
-        .main-card {
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
             background: var(--card-bg);
             padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--border);
         }
 
-        @media(min-width: 600px) {
-            .main-card {
-                padding: 30px;
-            }
+        .stat-info span {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 15px;
-        }
-
-        h2 {
-            color: var(--primary);
-            margin: 0;
+        .stat-info h2 {
             font-size: 22px;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            margin-top: 4px;
+            color: var(--danger);
         }
 
-        @media(min-width: 600px) {
-            h2 { font-size: 26px; }
-        }
-
-        /* Grid Layout */
-        .grid-row {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-
-        @media(min-width: 600px) {
-            .grid-row {
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-            }
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            font-size: 14px;
-            color: #4a5568;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px 14px;
-            box-sizing: border-box;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: all 0.3s;
-            background: #fff;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
-        }
-
-        .info-badge {
-            background: #fff5f5;
-            border-left: 4px solid var(--primary);
-            padding: 10px 12px;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 15px;
-            font-size: 14px;
-            color: #c53030;
-        }
-
-        .btn-container {
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
             display: flex;
-            gap: 10px;
-            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
         }
 
-        @media(min-width: 500px) {
-            .btn-container {
-                flex-direction: row;
+        /* Layout Grid */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
             }
         }
 
-        .calc-btn, .print-btn {
-            padding: 12px;
+        .card-box {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .card-box h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Form Elements */
+        .input-group {
+            margin-bottom: 14px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+        }
+
+        .input-group input {
             width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
+            outline: none;
+            background: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 11px;
+            border-radius: 8px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            border: none;
-            transition: transform 0.2s, box-shadow 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            font-family: inherit;
         }
 
-        .calc-btn {
-            background: linear-gradient(135deg, #d32f2f, #b71c1c);
-            color: white;
-            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+        .btn-primary:hover {
+            background: var(--primary-hover);
         }
 
-        .print-btn {
-            background: #2b6cb0;
-            color: white;
-            box-shadow: 0 4px 12px rgba(43, 108, 176, 0.3);
-            display: none;
+        /* Table Styling */
+        .table-container {
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .calc-btn:hover, .print-btn:hover {
-            transform: translateY(-2px);
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
         }
 
-        /* Result Section */
-        .result-box {
-            margin-top: 25px;
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            border-radius: 12px;
-            display: none;
-        }
-
-        /* Professional Red & Black Styled PaySlip Header */
-        .payslip-header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #d32f2f;
-            background: linear-gradient(to bottom, #fff5f5, transparent);
-            border-radius: 8px 8px 0 0;
-            padding-top: 12px;
-        }
-
-        .payslip-header h3 {
-            margin: 0;
-            color: #1a202c; /* Deep Black/Slate */
-            font-size: 21px;
-            letter-spacing: 1.2px;
-            font-weight: 800;
-        }
-
-        .payslip-header h3 span {
-            color: #d32f2f; /* Vibrant Red Highlight */
-        }
-
-        .payslip-header p {
-            margin: 5px 0 0 0;
-            color: #4a5568;
+        th, td {
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--border);
             font-size: 13px;
-            font-style: italic;
-            font-weight: 500;
         }
 
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
-            gap: 10px;
+        th {
+            font-weight: 600;
+            color: var(--text-muted);
+            background: var(--bg-color);
+            position: sticky;
+            top: 0;
         }
 
-        .result-item span:first-child {
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 35px 20px;
             color: var(--text-muted);
         }
 
-        .result-item span:last-child {
+        .empty-state i {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        footer span {
+            color: var(--danger);
             font-weight: 600;
-            color: var(--text-main);
-            text-align: right;
         }
 
-        .gross-row {
-            font-weight: 700 !important;
-            font-size: 15px !important;
-            color: #2b6cb0 !important;
-            border-top: 1px solid var(--border-color);
-            padding-top: 8px;
-            margin-top: 6px;
-        }
-
-        .deduction-row span:first-child {
-            color: #c53030 !important;
-        }
-        .deduction-row span:last-child {
-            color: #c53030 !important;
-        }
-
-        .total-row {
-            font-weight: 700 !important;
-            font-size: 16px !important;
-            color: var(--primary) !important;
-            border-top: 2px dashed var(--border-color);
-            padding-top: 10px;
-            margin-top: 10px;
-        }
-
-        /* Disclaimer Footer */
-        .disclaimer-footer {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px solid #e2e8f0;
-            font-size: 11px;
-            color: #718096;
-            text-align: center;
-            font-style: italic;
-            line-height: 1.4;
-        }
-
-        /* Page Footer Disclaimer */
-        .page-footer-disclaimer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 12px;
-            color: #718096;
-            font-style: italic;
-        }
-
-        /* Print Styling - A5 Landscape */
+        /* Print Styling */
         @media print {
-            @page {
-                size: A5 landscape;
-                margin: 10mm;
-            }
-
-            body {
-                background: white;
-                padding: 0;
-            }
-            .top-bar, .form-group, .info-badge, .calc-btn, .print-btn, .page-footer-disclaimer, .header {
-                display: none !important;
-            }
-            .dashboard-container {
-                max-width: 100%;
-                width: 100%;
-                margin: 0;
-            }
-            .main-card {
-                box-shadow: none;
-                border: none;
-                padding: 0;
-            }
-            .result-box {
-                display: block !important;
-                background: white !important;
-                border: 1px solid #333 !important;
-                border-radius: 0 !important;
-                padding: 15px !important;
-                margin-top: 0 !important;
-            }
-            .payslip-header {
-                border-bottom: 2px solid #d32f2f !important;
-                background: none !important;
-                padding-bottom: 8px;
-                margin-bottom: 12px;
-            }
-            .payslip-header h3 {
-                color: #1a202c !important;
-                font-size: 18px;
-            }
-            .payslip-header h3 span {
-                color: #d32f2f !important;
-            }
-            .payslip-header p {
-                font-size: 11px;
-                color: #4a5568 !important;
-            }
-            .result-item {
-                border-bottom: 1px solid #e2e8f0;
-                padding-bottom: 4px;
-                margin-bottom: 6px;
-                font-size: 13px;
-            }
-            .gross-row {
-                border-top: 1px solid #333 !important;
-                color: #2b6cb0 !important;
-            }
-            .total-row {
-                border-top: 2px solid #000 !important;
-                color: #000 !important;
-            }
-            .disclaimer-footer {
-                border-top: 1px solid #333 !important;
-                color: #333 !important;
-                display: block !important;
-                font-size: 10px;
-                margin-top: 10px;
-                padding-top: 6px;
-            }
+            body { background: #fff; color: #000; padding: 0; }
+            header, .card-box:first-child, footer, #loginOverlay { display: none !important; }
+            .container { max-width: 100%; }
+            .card-box { border: none; box-shadow: none; padding: 0; }
+            table { width: 100%; border: 1px solid #ddd; }
+            th, td { border: 1px solid #ddd; color: #000; }
         }
     </style>
 </head>
 <body>
 
-<div class="dashboard-container">
-    <!-- Top Live Widget -->
-    <div class="top-bar">
-        <div><i class="fa-solid fa-location-dot"></i> <span id="locationText">Dubai, UAE</span></div>
-        <div><i class="fa-solid fa-calendar-days"></i> <span id="currentDate">--</span></div>
-        <div><i class="fa-solid fa-clock"></i> <span id="currentTime">--</span></div>
-    </div>
-
-    <!-- Main Content Card -->
-    <div class="main-card">
-        <div class="header">
-            <h2>Smart Payroll System</h2>
-        </div>
-
-        <!-- Month & Year Selection -->
-        <div class="grid-row">
-            <div class="form-group">
-                <label for="selectMonth"><i class="fa-solid fa-calendar"></i> Select Month:</label>
-                <select id="selectMonth" onchange="updateMonthInfo()">
-                    <!-- Populated dynamically via JS -->
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="selectYear"><i class="fa-solid fa-calendar-alt"></i> Select Year:</label>
-                <input type="number" id="selectYear" value="" placeholder="e.g. 2026" onchange="updateMonthInfo()">
-            </div>
-        </div>
-
-        <!-- Working Days & Site Allowance Inputs -->
-        <div class="grid-row">
-            <div class="form-group">
-                <label for="basicDaysInput"><i class="fa-solid fa-business-time"></i> Basic Duty Days Worked:</label>
-                <input type="number" id="basicDaysInput" value="" placeholder="Enter days">
-            </div>
-
-            <div class="form-group">
-                <label for="siteAllowanceInput"><i class="fa-solid fa-money-bill-wave"></i> Monthly Site Allowance (Fixed):</label>
-                <input type="number" id="siteAllowanceInput" value="" placeholder="e.g. 200">
-            </div>
-        </div>
-
-        <!-- Auto Info Badge -->
-        <div class="info-badge" id="autoInfoBadge">
-            <span id="badgeText"><i class="fa-solid fa-circle-info"></i> Please select month and year to view working days info.</span>
-        </div>
-
-        <!-- Inputs for OT, Holidays and Deduction -->
-        <div class="grid-row">
-            <div class="form-group">
-                <label for="otDays"><i class="fa-solid fa-business-time"></i> Basic Overtime Days:</label>
-                <input type="number" step="any" id="otDays" value="" placeholder="e.g. 26">
-            </div>
-
-            <div class="form-group">
-                <label for="holidays"><i class="fa-solid fa-umbrella-beach"></i> Public Holiday / Week-off Work:</label>
-                <input type="number" step="any" id="holidays" value="" placeholder="e.g. 2">
-            </div>
-        </div>
-
-        <div class="grid-row">
-            <div class="form-group" style="grid-column: 1 / -1;">
-                <label for="deductionInput"><i class="fa-solid fa-file-invoice-dollar"></i> Deduction Amount (Manual):</label>
-                <input type="number" step="any" id="deductionInput" value="" placeholder="Enter deduction amount if any (leave blank if none)">
-            </div>
-        </div>
-
-        <div class="btn-container">
-            <button class="calc-btn" onclick="calculateSalary()"><i class="fa-solid fa-calculator"></i> Calculate Salary</button>
-            <button class="print-btn" id="printBtn" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Pay Slip</button>
-        </div>
-
-        <!-- Result Breakdown Box -->
-        <div class="result-box" id="resultBox">
-            <!-- Red & Black Styled PaySlip Header without icon -->
-            <div class="payslip-header">
-                <h3>UNOFFICIAL <span>SALARY STATEMENT</span></h3>
-                <p>Monthly Earnings & Allowance Breakdown</p>
-            </div>
-
-            <div class="result-item">
-                <span>Selected Month & Year:</span>
-                <span id="resMonthYear">--</span>
-            </div>
-            <div class="result-item">
-                <span>Earned Basic Salary:</span>
-                <span id="resBasic">0.00 د.إ</span>
-            </div>
-            <div class="result-item">
-                <span>Earned Allowance:</span>
-                <span id="resAllowance">0.00 د.إ</span>
-            </div>
-            <div class="result-item">
-                <span>Earned Site Allowance:</span>
-                <span id="resSiteAllowance">0.00 د.إ</span>
-            </div>
-            <div class="result-item">
-                <span>Overtime Amount:</span>
-                <span id="resOT">0.00 د.إ</span>
-            </div>
-            <div class="result-item">
-                <span>Public Holiday / Week-off Amount:</span>
-                <span id="resHoliday">0.00 د.إ</span>
-            </div>
-            <div class="result-item gross-row">
-                <span>Gross Salary:</span>
-                <span id="resGross">0.00 د.إ</span>
-            </div>
-            <div class="result-item deduction-row">
-                <span>Total Deduction:</span>
-                <span id="resDeduction">0.00 د.إ</span>
-            </div>
-            <div class="result-item total-row">
-                <span>Net Payable Salary:</span>
-                <span id="resTotal">0.00 د.إ</span>
-            </div>
-            
-            <!-- Disclaimer Footer -->
-            <div class="disclaimer-footer">
-                * Note: This is an unofficial calculation for personal reference only. No claims can be made to the company based on this statement.
-            </div>
+    <!-- Admin Login Screen -->
+    <div id="loginOverlay">
+        <div class="login-card">
+            <div class="login-title"><i class="fas fa-wallet" style="color: var(--primary);"></i> আমার হিসেবের খাতা</div>
+            <h2>অ্যাডমিন লগইন</h2>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="adminPassword">পাসওয়ার্ড দিন</label>
+                    <input type="password" id="adminPassword" placeholder="পাসওয়ার্ড লিখুন" required>
+                </div>
+                <button type="submit" class="btn-primary">লগইন করুন</button>
+            </form>
         </div>
     </div>
 
-    <!-- Page Footer Disclaimer -->
-    <div class="page-footer-disclaimer">
-        * Unofficial personal estimate. Not valid for company claims.
+    <!-- Main Application Container -->
+    <div class="container" id="appContainer">
+        <!-- Header -->
+        <header>
+            <div class="bismillah">বিসমিল্লাহির রাহমানির রাহীম</div>
+            <div class="header-content">
+                <div class="logo-area">
+                    <i class="fas fa-wallet" style="color: var(--primary); font-size: 22px;"></i>
+                    <h1>আমার হিসেবের খাতা</h1>
+                </div>
+
+                <!-- Header Actions & Dropdown Controls -->
+                <div class="header-actions">
+                    <!-- Year Dropdown -->
+                    <select id="yearSelect" class="header-select" onchange="onYearChange(this.value)">
+                        <!-- ডাইনামিক বছর এখানে যুক্ত হবে -->
+                    </select>
+
+                    <!-- Month Dropdown -->
+                    <select id="monthSelect" class="header-select" onchange="onMonthChange(this.value)">
+                        <option value="all">সকল মাস</option>
+                        <option value="0">জানুয়ারি</option>
+                        <option value="1">ফেব্রুয়ারি</option>
+                        <option value="2">মার্চ</option>
+                        <option value="3">এপ্রিল</option>
+                        <option value="4">মে</option>
+                        <option value="5">জুন</option>
+                        <option value="6">জুলাই</option>
+                        <option value="7">আগস্ট</option>
+                        <option value="8">সেপ্টেম্বর</option>
+                        <option value="9">অক্টোবর</option>
+                        <option value="10">নভেম্বর</option>
+                        <option value="11">ডিসেম্বর</option>
+                    </select>
+
+                    <button class="btn-icon" onclick="resetToHome()" title="হোম"><i class="fas fa-house"></i></button>
+                    <!-- প্রিন্ট বাটন আপডেট করা হয়েছে -->
+                    <button class="btn-icon" onclick="window.print()" title="প্রিন্ট"><i class="fas fa-print"></i> প্রিন্ট</button>
+                    <button class="btn-icon" onclick="toggleTheme()" title="ডার্ক/লাইট মোড"><i id="themeIcon" class="fas fa-moon"></i></button>
+                    <button class="btn-icon" onclick="logout()" title="লগআউট" style="color: var(--danger);"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Summary Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <span id="selectedMonthTitle">নির্বাচিত মাসের মোট খরচ</span>
+                    <h2 id="monthlyExpense">৳ ০</h2>
+                </div>
+                <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <span id="selectedYearTitle">নির্বাচিত বছরের মোট খরচ</span>
+                    <h2 id="yearlyExpense">৳ ০</h2>
+                </div>
+                <div class="stat-icon"><i class="fas fa-chart-pie"></i></div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-layout">
+            <!-- Entry Form -->
+            <div class="card-box">
+                <h3><i class="fas fa-plus-circle" style="color: var(--primary);"></i> নতুন খরচ যোগ করুন</h3>
+                <form id="expenseForm">
+                    <div class="input-group">
+                        <label for="category">খরচের খাত / বিবরণ</label>
+                        <input type="text" id="category" placeholder="যেমন: বাজার, বিদ্যুৎ বিল..." required>
+                    </div>
+                    <div class="input-group">
+                        <label for="amount">টাকার পরিমাণ (৳)</label>
+                        <input type="number" id="amount" placeholder="পরিমাণ লিখুন" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="date">তারিখ</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <i class="fas fa-save"></i> খরচ সেভ করুন
+                    </button>
+                </form>
+            </div>
+
+            <!-- Transaction List -->
+            <div class="card-box">
+                <h3><i class="fas fa-list" style="color: var(--primary);"></i> খরচের ইতিহাস</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>তারিখ</th>
+                                <th>বিবরণ</th>
+                                <th>ধরণ</th>
+                                <th>পরিমাণ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseTableBody">
+                            <tr>
+                                <td colspan="4">
+                                    <div class="empty-state">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <p>গুগল শিট থেকে ডেটা লোড হচ্ছে...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>© 2026 <span>আব্দুল আউয়াল</span> | এই সিস্টেমটি শুধুমাত্র আব্দুল আউয়ালের মাসিক এবং বাৎসরিক পারিবারিক খরচের হিসাব সংরক্ষণের জন্য সংরক্ষিত।</p>
+        </footer>
     </div>
-</div>
 
-<script>
-    let totalWorkingDaysInMonth = 26;
+    <!-- Scripting & Google Sheets API Logic -->
+    <script>
+        const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'; // আপনার গুগল স্ক্রিপ্ট ওয়েব অ্যাপ ইউআরএল এখানে বসাবেন
 
-    const monthsData = [
-        "January", "February", "March", "April", "May", "June", 
-        "July", "August", "September", "October", "November", "December"
-    ];
+        let allTransactions = [];
+        let currentSelectedYear = new Date().getFullYear().toString();
+        let currentSelectedMonth = 'all';
 
-    function populateMonths() {
-        const select = document.getElementById('selectMonth');
-        select.innerHTML = "<option value='' disabled selected>Select Month</option>";
-        
-        monthsData.forEach((name, index) => {
-            const opt = document.createElement('option');
-            opt.value = index;
-            opt.textContent = name;
-            select.appendChild(opt);
+        // Login Handler (API-based authentication check)
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPassword').value;
+
+            if(scriptURL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                if(pass === "22838") {
+                    grantAccess();
+                } else {
+                    alert('ভুল পাসওয়ার্ড!');
+                }
+                return;
+            }
+
+            fetch(scriptURL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', password: pass })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if(result.success) {
+                    grantAccess();
+                } else {
+                    alert('ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিয়ে প্রবেশ করুন।');
+                }
+            })
+            .catch(error => {
+                console.error('Login Error:', error);
+                alert('সার্ভার কানেকশনে সমস্যা হয়েছে। অনুগ্রহ করে ইন্টারনেট সংযোগ চেক করুন।');
+            });
         });
-    }
 
-    function updateLiveClock() {
-        const now = new Date();
-        document.getElementById('currentTime').innerText = now.toLocaleTimeString();
-        const options = { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' };
-        document.getElementById('currentDate').innerText = now.toLocaleDateString('en-US', options);
-    }
-    setInterval(updateLiveClock, 1000);
-    updateLiveClock();
-
-    window.onload = function() {
-        populateMonths();
-    };
-
-    function updateMonthInfo() {
-        const yearInput = document.getElementById('selectYear').value;
-        const monthSelect = document.getElementById('selectMonth').value;
-
-        if (yearInput === "" || monthSelect === "") {
-            document.getElementById('badgeText').innerHTML = `<i class="fa-solid fa-circle-info"></i> Please select month and year to view working days info.`;
-            return;
+        function grantAccess() {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
+            initializeApp();
         }
 
-        const year = parseInt(yearInput);
-        const month = parseInt(monthSelect);
+        function logout() {
+            document.getElementById('appContainer').style.display = 'none';
+            document.getElementById('loginOverlay').style.display = 'flex';
+            document.getElementById('adminPassword').value = '';
+        }
 
-        const totalDays = new Date(year, month + 1, 0).getDate();
-        
-        let sundayCount = 0;
-        for (let day = 1; day <= totalDays; day++) {
-            const dateObj = new Date(year, month, day);
-            if (dateObj.getDay() === 0) {
-                sundayCount++;
+        function initializeApp() {
+            fetchTransactions();
+        }
+
+        // গুগল শিট থেকে ডেটা ফেচ (Fetch) করার ফাংশন
+        function fetchTransactions() {
+            if(scriptURL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                allTransactions = [];
+                updateUIAfterFetch();
+                return;
+            }
+
+            fetch(scriptURL + '?action=getExpenses')
+            .then(response => response.json())
+            .then(data => {
+                allTransactions = data.map(item => ({
+                    date: item.date,
+                    category: item.category,
+                    amount: Number(item.amount),
+                    year: item.year.toString(),
+                    month: item.month.toString()
+                }));
+                updateUIAfterFetch();
+            })
+            .catch(error => {
+                console.error('Fetch Error:', error);
+                document.getElementById('expenseTableBody').innerHTML = `
+                    <tr><td colspan="4"><div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--danger)"></i><p>ডেটা লোড করতে সমস্যা হয়েছে।</p></div></td></tr>
+                `;
+            });
+        }
+
+        function updateUIAfterFetch() {
+            initializeYearsDropdown();
+            document.getElementById('monthSelect').value = currentSelectedMonth;
+            filterAndDisplayData();
+        }
+
+        function initializeYearsDropdown() {
+            const currentYear = new Date().getFullYear();
+            const yearSelect = document.getElementById('yearSelect');
+            
+            let yearsSet = new Set([
+                (currentYear - 1).toString(), 
+                currentYear.toString(), 
+                (currentYear + 1).toString(), 
+                currentSelectedYear
+            ]);
+
+            allTransactions.forEach(item => yearsSet.add(item.year));
+
+            let sortedYears = Array.from(yearsSet).sort((a, b) => b - a);
+
+            yearSelect.innerHTML = '';
+            sortedYears.forEach(y => {
+                let opt = document.createElement('option');
+                opt.value = y;
+                opt.innerText = y + ' সাল';
+                if (y === currentSelectedYear) {
+                    opt.selected = true;
+                }
+                yearSelect.appendChild(opt);
+            });
+        }
+
+        function onYearChange(year) {
+            currentSelectedYear = year;
+            filterAndDisplayData();
+        }
+
+        function onMonthChange(month) {
+            currentSelectedMonth = month;
+            filterAndDisplayData();
+        }
+
+        function resetToHome() {
+            currentSelectedYear = new Date().getFullYear().toString();
+            currentSelectedMonth = 'all';
+            document.getElementById('yearSelect').value = currentSelectedYear;
+            document.getElementById('monthSelect').value = 'all';
+            filterAndDisplayData();
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if(html.getAttribute('data-theme') === 'light') {
+                html.setAttribute('data-theme', 'dark');
+                icon.className = 'fas fa-sun';
+            } else {
+                html.setAttribute('data-theme', 'light');
+                icon.className = 'fas fa-moon';
             }
         }
 
-        totalWorkingDaysInMonth = totalDays - sundayCount;
-        document.getElementById('basicDaysInput').value = totalWorkingDaysInMonth;
-        document.getElementById('badgeText').innerHTML = `<i class="fa-solid fa-circle-info"></i> Total Days in Month: <strong>${totalDays}</strong> | Standard Working Days (Excl. Sundays): <strong>${totalWorkingDaysInMonth}</strong>`;
-    }
+        const form = document.getElementById('expenseForm');
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            
+            const rawDate = document.getElementById('date').value;
+            const itemDate = new Date(rawDate);
+            const entryYear = itemDate.getFullYear().toString();
+            
+            const data = {
+                action: 'addExpense',
+                category: document.getElementById('category').value,
+                amount: Number(document.getElementById('amount').value),
+                date: rawDate,
+                year: entryYear,
+                month: itemDate.getMonth().toString()
+            };
 
-    function calculateSalary() {
-        const actualWorkedDays = parseFloat(document.getElementById('basicDaysInput').value) || 0;
-        const monthlySiteAllowance = parseFloat(document.getElementById('siteAllowanceInput').value) || 0;
-        
-        const earnedBasic = (1200 / (totalWorkingDaysInMonth || 26)) * actualWorkedDays;
-        const earnedAllowance = (720 / (totalWorkingDaysInMonth || 26)) * actualWorkedDays;
-        const earnedSiteAllowance = (monthlySiteAllowance / (totalWorkingDaysInMonth || 26)) * actualWorkedDays;
-        
-        const otDays = parseFloat(document.getElementById('otDays').value) || 0;
-        const otRatePerDay = 342 / 26; 
-        const totalOT = otRatePerDay * otDays;
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...`;
 
-        const holidays = parseFloat(document.getElementById('holidays').value) || 0;
-        const holidayRatePerDay = 73.25;
-        const totalHolidayPay = holidays * holidayRatePerDay;
+            if(scriptURL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                fetch(scriptURL, { 
+                    method: 'POST', 
+                    body: JSON.stringify(data) 
+                })
+                .then(response => response.json())
+                .then(res => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `<i class="fas fa-save"></i> খরচ সেভ করুন`;
+                    if(res.status === 'success') {
+                        alert('সফলভাবে গুগল শিটে খরচ সংরক্ষিত হয়েছে!');
+                        form.reset();
+                        currentSelectedYear = entryYear;
+                        fetchTransactions(); // গুগল শিট থেকে লেটেস্ট ডেটা রিফ্রেশ করে নিয়ে আসবে
+                    } else {
+                        alert('সেভ করতে সমস্যা হয়েছে: ' + (res.message || 'অজানা ত্রুটি'));
+                    }
+                })
+                .catch(error => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `<i class="fas fa-save"></i> খরচ সেভ করুন`;
+                    console.error('Google Sheets Error!', error);
+                    alert('সার্ভার কানেকশনে সমস্যা হয়েছে।');
+                });
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fas fa-save"></i> খরচ সেভ করুন`;
+                alert('অনুগ্রহ করে আগে scriptURL-এ সঠিক গুগল স্ক্রিপ্ট লিংকটি বসান!');
+            }
+        });
 
-        const deductionAmount = parseFloat(document.getElementById('deductionInput').value) || 0;
+        function filterAndDisplayData() {
+            const tbody = document.getElementById('expenseTableBody');
+            
+            const filtered = allTransactions.filter(item => {
+                let matchYear = item.year === currentSelectedYear;
+                let matchMonth = currentSelectedMonth === 'all' || item.month === currentSelectedMonth;
+                return matchYear && matchMonth;
+            });
 
-        const monthSelect = document.getElementById('selectMonth');
-        const year = document.getElementById('selectYear').value;
+            if(filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open"></i>
+                                <p>এই সময়ে কোনো খরচের হিসাব নেই।</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = '';
+                filtered.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.date}</td>
+                        <td>${item.category}</td>
+                        <td><span class="badge">খরচ</span></td>
+                        <td>৳ ${item.amount.toLocaleString('bn-BD')}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
 
-        if (monthSelect.value === "" || year === "") {
-            alert("Please select both Month and Year first!");
-            return;
+            calculateStats();
         }
 
-        const monthName = monthsData[monthSelect.value];
-        const grossSalary = earnedBasic + earnedAllowance + earnedSiteAllowance + totalOT + totalHolidayPay;
-        const netSalary = grossSalary - deductionAmount;
+        function calculateStats() {
+            const yearFiltered = allTransactions.filter(item => item.year === currentSelectedYear);
+            let totalYearly = yearFiltered.reduce((sum, item) => sum + item.amount, 0);
 
-        document.getElementById('resMonthYear').innerText = `${monthName} ${year}`;
-        document.getElementById('resBasic').innerText = earnedBasic.toFixed(2) + ' د.إ';
-        document.getElementById('resAllowance').innerText = earnedAllowance.toFixed(2) + ' د.إ';
-        document.getElementById('resSiteAllowance').innerText = earnedSiteAllowance.toFixed(2) + ' د.إ';
-        document.getElementById('resOT').innerText = totalOT.toFixed(2) + ' د.إ';
-        document.getElementById('resHoliday').innerText = totalHolidayPay.toFixed(2) + ' د.إ';
-        document.getElementById('resGross').innerText = grossSalary.toFixed(2) + ' د.إ';
-        document.getElementById('resDeduction').innerText = '- ' + deductionAmount.toFixed(2) + ' د.إ';
-        document.getElementById('resTotal').innerText = netSalary.toFixed(2) + ' د.إ';
+            let totalMonthly = 0;
+            if(currentSelectedMonth === 'all') {
+                totalMonthly = totalYearly;
+                document.getElementById('selectedMonthTitle').innerText = `${currentSelectedYear} সালের মোট খরচ`;
+            } else {
+                const monthFiltered = yearFiltered.filter(item => item.month === currentSelectedMonth);
+                totalMonthly = monthFiltered.reduce((sum, item) => sum + item.amount, 0);
+                
+                const monthNames = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+                document.getElementById('selectedMonthTitle').innerText = `${monthNames[currentSelectedMonth]} (${currentSelectedYear}) এর মোট খরচ`;
+            }
 
-        document.getElementById('resultBox').style.display = 'block';
-        document.getElementById('printBtn').style.display = 'flex';
-    }
-</script>
-
+            document.getElementById('yearlyExpense').innerText = '৳ ' + totalYearly.toLocaleString('bn-BD');
+            document.getElementById('selectedYearTitle').innerText = `${currentSelectedYear} সালের মোট খরচ`;
+            document.getElementById('monthlyExpense').innerText = '৳ ' + totalMonthly.toLocaleString('bn-BD');
+        }
+    </script>
 </body>
 </html>
