@@ -424,7 +424,7 @@
                     </select>
 
                     <button class="btn-icon" onclick="resetToHome()" title="হোম"><i class="fas fa-house"></i></button>
-                    <!-- প্রিন্ট বাটন আপডেট করা হয়েছে -->
+                    <!-- প্রিন্ট বাটন -->
                     <button class="btn-icon" onclick="window.print()" title="প্রিন্ট"><i class="fas fa-print"></i> প্রিন্ট</button>
                     <button class="btn-icon" onclick="toggleTheme()" title="ডার্ক/লাইট মোড"><i id="themeIcon" class="fas fa-moon"></i></button>
                     <button class="btn-icon" onclick="logout()" title="লগআউট" style="color: var(--danger);"><i class="fas fa-sign-out-alt"></i></button>
@@ -510,7 +510,8 @@
 
     <!-- Scripting & Google Sheets API Logic -->
     <script>
-        const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'; // আপনার গুগল স্ক্রিপ্ট ওয়েব অ্যাপ ইউআরএল এখানে বসাবেন
+        // আপনার গুগল স্ক্রিপ্ট ওয়েব অ্যাপ ইউআরএল এখানে আপডেট করা হয়েছে
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxJiUsq573hrgVAGsS-GOrLgyawP_Texd-MWVuhQtHToXORZcP5tSQ3YVI-XWKmvBRC/exec';
 
         let allTransactions = [];
         let currentSelectedYear = new Date().getFullYear().toString();
@@ -520,15 +521,6 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const pass = document.getElementById('adminPassword').value;
-
-            if(scriptURL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-                if(pass === "22838") {
-                    grantAccess();
-                } else {
-                    alert('ভুল পাসওয়ার্ড!');
-                }
-                return;
-            }
 
             fetch(scriptURL, {
                 method: 'POST',
@@ -566,12 +558,6 @@
 
         // গুগল শিট থেকে ডেটা ফেচ (Fetch) করার ফাংশন
         function fetchTransactions() {
-            if(scriptURL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-                allTransactions = [];
-                updateUIAfterFetch();
-                return;
-            }
-
             fetch(scriptURL + '?action=getExpenses')
             .then(response => response.json())
             .then(data => {
@@ -676,35 +662,29 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...`;
 
-            if(scriptURL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-                fetch(scriptURL, { 
-                    method: 'POST', 
-                    body: JSON.stringify(data) 
-                })
-                .then(response => response.json())
-                .then(res => {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = `<i class="fas fa-save"></i> খরচ সেভ করুন`;
-                    if(res.status === 'success') {
-                        alert('সফলভাবে গুগল শিটে খরচ সংরক্ষিত হয়েছে!');
-                        form.reset();
-                        currentSelectedYear = entryYear;
-                        fetchTransactions(); // গুগল শিট থেকে লেটেস্ট ডেটা রিফ্রেশ করে নিয়ে আসবে
-                    } else {
-                        alert('সেভ করতে সমস্যা হয়েছে: ' + (res.message || 'অজানা ত্রুটি'));
-                    }
-                })
-                .catch(error => {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = `<i class="fas fa-save"></i> খরচ সেভ করুন`;
-                    console.error('Google Sheets Error!', error);
-                    alert('সার্ভার কানেকশনে সমস্যা হয়েছে।');
-                });
-            } else {
+            fetch(scriptURL, { 
+                method: 'POST', 
+                body: JSON.stringify(data) 
+            })
+            .then(response => response.json())
+            .then(res => {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = `<i class="fas fa-save"></i> খরচ সেভ করুন`;
-                alert('অনুগ্রহ করে আগে scriptURL-এ সঠিক গুগল স্ক্রিপ্ট লিংকটি বসান!');
-            }
+                if(res.status === 'success') {
+                    alert('সফলভাবে গুগল শিটে খরচ সংরক্ষিত হয়েছে!');
+                    form.reset();
+                    currentSelectedYear = entryYear;
+                    fetchTransactions(); // গুগল শিট থেকে লেটেস্ট ডেটা রিফ্রেশ করে নিয়ে আসবে
+                } else {
+                    alert('সেভ করতে সমস্যা হয়েছে: ' + (res.message || 'অজানা ত্রুটি'));
+                }
+            })
+            .catch(error => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fas fa-save"></i> খরচ সেভ করুন`;
+                console.error('Google Sheets Error!', error);
+                alert('সার্ভার কানেকশনে সমস্যা হয়েছে।');
+            });
         });
 
         function filterAndDisplayData() {
