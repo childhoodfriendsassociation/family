@@ -482,7 +482,7 @@
                                 <td colspan="4">
                                     <div class="empty-state">
                                         <i class="fas fa-spinner fa-spin"></i>
-                                        <p>ডেটা লোড হচ্ছে...</p>
+                                        <p>গুগল শিট থেকে ডেটা লোড হচ্ছে...</p>
                                     </div>
                                 </td>
                             </tr>
@@ -500,7 +500,7 @@
 
     <!-- Scripting & Google Sheets API Logic -->
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxJiUsq573hrgVAGsS-GOrLgyawP_Texd-MWVuhQtHToXORZcP5tSQ3YVI-XWKmvBRC/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwRAl_2TdWKaEgYQGMDapCoVwGvcevtJG28ZqWljVPg_asVlASdifOI1ouDuFZO_2zQ/exec';
 
         let allTransactions = [];
         let currentSelectedYear = new Date().getFullYear().toString();
@@ -546,14 +546,14 @@
             document.getElementById('date').value = today;
             
             initializeYearsDropdown();
-            fetchTransactions();
+            fetchTransactions(); // লগইন হওয়ার সাথেই সাথে শিট থেকে ডেটা সিঙ্ক হবে
         }
 
+        // গুগল শিট থেকে ডেটা লোড করার মূল ফাংশন
         function fetchTransactions() {
-            fetch(scriptURL + '?action=getExpenses')
+            fetch(scriptURL)
             .then(response => response.json())
             .then(data => {
-                // নিশ্চিত করা যে ডেটা অ্যারে আকারে আসছে
                 if(Array.isArray(data)) {
                     allTransactions = data.map(item => {
                         let itemDate = new Date(item.date);
@@ -571,7 +571,7 @@
             .catch(error => {
                 console.error('Fetch Error:', error);
                 document.getElementById('expenseTableBody').innerHTML = `
-                    <tr><td colspan="4"><div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--danger)"></i><p>ডেটা লোড করতে সমস্যা হয়েছে।</p></div></td></tr>
+                    <tr><td colspan="4"><div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:var(--danger)"></i><p>গুগল শিট থেকে ডেটা লোড করতে সমস্যা হয়েছে।</p></div></td></tr>
                 `;
             });
         }
@@ -644,7 +644,7 @@
             }
         }
 
-        // ফর্ম সাবমিট হ্যান্ডলার (ইনস্ট্যান্ট আপডেট সহ)
+        // ফর্ম সাবমিট হ্যান্ডলার
         const form = document.getElementById('expenseForm');
         form.addEventListener('submit', e => {
             e.preventDefault();
@@ -677,7 +677,6 @@
                 submitBtn.innerHTML = `<i class="fas fa-save"></i> খরচ সেভ করুন`;
                 
                 if(res.status === 'success' || res.success) {
-                    // লোকাল অ্যারেতে ইনস্ট্যান্ট ডেটা যোগ করা যাতে রিফ্রেশ ছাড়াই সাথে সাথে ডিসপ্লে হয়
                     allTransactions.unshift({
                         date: newData.date,
                         category: newData.category,
@@ -686,14 +685,12 @@
                         month: newData.month
                     });
 
-                    // ইউজার যে বছরের ডেটা এন্ট্রি দিয়েছেন, ড্রপডাউন অটো সেই বছরে শিফট করা
                     currentSelectedYear = entryYear;
                     document.getElementById('yearSelect').value = currentSelectedYear;
 
                     form.reset();
                     document.getElementById('date').value = new Date().toISOString().split('T')[0];
                     
-                    // স্ক্রিন আপডেট ও রি-রেন্ডার করা
                     updateUIAfterFetch();
                     alert('সফলভাবে গুগল শিটে খরচ সংরক্ষিত হয়েছে!');
                 } else {
