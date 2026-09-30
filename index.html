@@ -92,7 +92,6 @@
             font-weight: 500;
         }
 
-        /* Hidden Main App */
         #appContainer {
             display: none;
         }
@@ -160,10 +159,6 @@
             align-items: center;
             gap: 6px;
             outline: none;
-        }
-
-        .header-select {
-            cursor: pointer;
         }
 
         .btn-icon:hover, .header-select:hover {
@@ -360,7 +355,6 @@
             font-weight: 600;
         }
 
-        /* Print Styling */
         @media print {
             body { background: #fff; color: #000; padding: 0; }
             header, .card-box:first-child, footer, #loginOverlay { display: none !important; }
@@ -399,14 +393,11 @@
                     <h1>আমার হিসেবের খাতা</h1>
                 </div>
 
-                <!-- Header Actions & Dropdown Controls -->
                 <div class="header-actions">
-                    <!-- Year Dropdown -->
                     <select id="yearSelect" class="header-select" onchange="onYearChange(this.value)">
-                        <!-- ডাইনামিক বছর এখানে যুক্ত হবে -->
+                        <!-- ডাইনামিক বছর -->
                     </select>
 
-                    <!-- Month Dropdown -->
                     <select id="monthSelect" class="header-select" onchange="onMonthChange(this.value)">
                         <option value="all">সকল মাস</option>
                         <option value="0">জানুয়ারি</option>
@@ -424,7 +415,6 @@
                     </select>
 
                     <button class="btn-icon" onclick="resetToHome()" title="হোম"><i class="fas fa-house"></i></button>
-                    <!-- প্রিন্ট বাটন -->
                     <button class="btn-icon" onclick="window.print()" title="প্রিন্ট"><i class="fas fa-print"></i> প্রিন্ট</button>
                     <button class="btn-icon" onclick="toggleTheme()" title="ডার্ক/লাইট মোড"><i id="themeIcon" class="fas fa-moon"></i></button>
                     <button class="btn-icon" onclick="logout()" title="লগআউট" style="color: var(--danger);"><i class="fas fa-sign-out-alt"></i></button>
@@ -492,7 +482,7 @@
                                 <td colspan="4">
                                     <div class="empty-state">
                                         <i class="fas fa-spinner fa-spin"></i>
-                                        <p>গুগল শিট থেকে ডেটা লোড হচ্ছে...</p>
+                                        <p>ডেটা লোড হচ্ছে...</p>
                                     </div>
                                 </td>
                             </tr>
@@ -535,7 +525,7 @@
             })
             .catch(error => {
                 console.error('Login Error:', error);
-                alert('সার্ভার কানেকশনে সমস্যা হয়েছে। অনুগ্রহ করে ইন্টারনেট সংযোগ চেক করুন।');
+                alert('সার্ভার কানেকশনে সমস্যা হয়েছে।');
             });
         });
 
@@ -555,27 +545,27 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('date').value = today;
             
-            // প্রাথমিক ড্রপডাউন লোড করা যাতে শিট ফেচ হওয়ার আগেই সালগুলো দেখা যায়
             initializeYearsDropdown();
             fetchTransactions();
         }
 
-        // গুগল শিট থেকে ডেটা ফেচ (Fetch) করার ফাংশন
         function fetchTransactions() {
             fetch(scriptURL + '?action=getExpenses')
             .then(response => response.json())
             .then(data => {
-                allTransactions = data.map(item => {
-                    // শিটে বছর বা মাস না থাকলে তারিখ থেকে বের করে নেওয়া
-                    let itemDate = new Date(item.date);
-                    return {
-                        date: item.date,
-                        category: item.category,
-                        amount: Number(item.amount),
-                        year: item.year ? item.year.toString() : itemDate.getFullYear().toString(),
-                        month: item.month !== undefined && item.month !== "" ? item.month.toString() : itemDate.getMonth().toString()
-                    };
-                });
+                // নিশ্চিত করা যে ডেটা অ্যারে আকারে আসছে
+                if(Array.isArray(data)) {
+                    allTransactions = data.map(item => {
+                        let itemDate = new Date(item.date);
+                        return {
+                            date: item.date,
+                            category: item.category,
+                            amount: Number(item.amount),
+                            year: item.year ? item.year.toString() : itemDate.getFullYear().toString(),
+                            month: item.month !== undefined && item.month !== "" ? item.month.toString() : itemDate.getMonth().toString()
+                        };
+                    });
+                }
                 updateUIAfterFetch();
             })
             .catch(error => {
@@ -596,7 +586,6 @@
             const currentYear = new Date().getFullYear();
             const yearSelect = document.getElementById('yearSelect');
             
-            // ডিফলต์ হিসেবে বর্তমান বছর এবং তার আশেপাশের বছরগুলো যুক্ত করা
             let yearsSet = new Set([
                 (currentYear - 2).toString(),
                 (currentYear - 1).toString(), 
@@ -605,14 +594,12 @@
                 currentSelectedYear
             ]);
 
-            // শিট থেকে আসা ট্রানজেকশনগুলোর বছর যুক্ত করা
             allTransactions.forEach(item => {
                 if(item.year && !isNaN(item.year)) {
                     yearsSet.add(item.year);
                 }
             });
 
-            // বড় থেকে ছোট ক্রমানুসারে সাজানো (যেমন: ২০২৬, ২০২৫, ২০২৪...)
             let sortedYears = Array.from(yearsSet).sort((a, b) => Number(b) - Number(a));
 
             yearSelect.innerHTML = '';
@@ -657,6 +644,7 @@
             }
         }
 
+        // ফর্ম সাবমিট হ্যান্ডলার (ইনস্ট্যান্ট আপডেট সহ)
         const form = document.getElementById('expenseForm');
         form.addEventListener('submit', e => {
             e.preventDefault();
@@ -666,7 +654,7 @@
             const entryYear = itemDate.getFullYear().toString();
             const entryMonth = itemDate.getMonth().toString();
             
-            const data = {
+            const newData = {
                 action: 'addExpense',
                 category: document.getElementById('category').value,
                 amount: Number(document.getElementById('amount').value),
@@ -681,18 +669,33 @@
 
             fetch(scriptURL, { 
                 method: 'POST', 
-                body: JSON.stringify(data) 
+                body: JSON.stringify(newData) 
             })
             .then(response => response.json())
             .then(res => {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = `<i class="fas fa-save"></i> খরচ সেভ করুন`;
-                if(res.status === 'success') {
-                    alert('সফলভাবে গুগল শিটে খরচ সংরক্ষিত হয়েছে!');
+                
+                if(res.status === 'success' || res.success) {
+                    // লোকাল অ্যারেতে ইনস্ট্যান্ট ডেটা যোগ করা যাতে রিফ্রেশ ছাড়াই সাথে সাথে ডিসপ্লে হয়
+                    allTransactions.unshift({
+                        date: newData.date,
+                        category: newData.category,
+                        amount: newData.amount,
+                        year: newData.year,
+                        month: newData.month
+                    });
+
+                    // ইউজার যে বছরের ডেটা এন্ট্রি দিয়েছেন, ড্রপডাউন অটো সেই বছরে শিফট করা
+                    currentSelectedYear = entryYear;
+                    document.getElementById('yearSelect').value = currentSelectedYear;
+
                     form.reset();
                     document.getElementById('date').value = new Date().toISOString().split('T')[0];
-                    currentSelectedYear = entryYear;
-                    fetchTransactions(); 
+                    
+                    // স্ক্রিন আপডেট ও রি-রেন্ডার করা
+                    updateUIAfterFetch();
+                    alert('সফলভাবে গুগল শিটে খরচ সংরক্ষিত হয়েছে!');
                 } else {
                     alert('সেভ করতে সমস্যা হয়েছে: ' + (res.message || 'অজানা ত্রুটি'));
                 }
